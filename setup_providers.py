@@ -31,21 +31,21 @@ def save_env(env_vars):
     """Save environment variables to .env file"""
     content = """# Provider Configuration
 # Available options: "ollama" or "openai"
-LLM_PROVIDER={llm_provider}
-EMBEDDING_PROVIDER={embedding_provider}
+LLM_PROVIDER={LLM_PROVIDER}
+EMBEDDING_PROVIDER={EMBEDDING_PROVIDER}
 
 # Ollama Configuration (for LLM_PROVIDER=ollama)
-OLLAMA_ENDPOINT={ollama_endpoint}
-OLLAMA_LLM_MODEL={ollama_llm_model}
+OLLAMA_ENDPOINT={OLLAMA_ENDPOINT}
+OLLAMA_LLM_MODEL={OLLAMA_LLM_MODEL}
 
 # Ollama Configuration (for EMBEDDING_PROVIDER=ollama)
-OLLAMA_EMBEDDING_MODEL={ollama_embedding_model}
+OLLAMA_EMBEDDING_MODEL={OLLAMA_EMBEDDING_MODEL}
 
 # OpenAI Configuration (for LLM_PROVIDER=openai and/or EMBEDDING_PROVIDER=openai)
 # Get your API key from https://platform.openai.com/api-keys
-OPENAI_API_KEY={openai_api_key}
-OPENAI_LLM_MODEL={openai_llm_model}
-OPENAI_EMBEDDING_MODEL={openai_embedding_model}
+OPENAI_API_KEY={OPENAI_API_KEY}
+OPENAI_LLM_MODEL={OPENAI_LLM_MODEL}
+OPENAI_EMBEDDING_MODEL={OPENAI_EMBEDDING_MODEL}
 """.format(**env_vars)
     
     with open(".env", 'w') as f:

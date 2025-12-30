@@ -11,6 +11,12 @@ import os
 from dotenv import load_dotenv
 import requests
 
+import urllib3
+#Disable insecure request warnings for OpenAI calls
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import hashlib
+from datetime import datetime
+
 load_dotenv()
 
 # Embedding provider configuration
@@ -61,7 +67,8 @@ def embed_with_openai(text: str):
             json={
                 "model": OPENAI_EMBEDDING_MODEL,
                 "input": text
-            }
+            },
+            verify=False
         )
         resp.raise_for_status()
         result = resp.json()
@@ -86,19 +93,30 @@ def retrieve(question: str, threshold: float = 0.8) -> str:
         emb = embed(question)
         if emb is None:
             return ""
-        result = collection.query(
-            embeddings=[emb],
-            n_results=1
-        )
-
-        if not result["distances"]:
+        try:
+            result = collection.query(
+                embeddings=[emb],
+                n_results=1
+            )
+        except TypeError:
+            # Fallback for older chromadb versions
+            result = collection.query(
+                query_embeddings=[emb],
+                n_results=1
+            )
+        if not result["distances"] or not result["distances"][0]:
             return ""
 
         similarity = 1 - result["distances"][0][0]
         if similarity >= threshold:
-            return result["metadatas"][0][0]["sql"]
-    except Exception:
-        pass
+            similar_question = result["documents"][0][0] if result["documents"] else "N/A"
+            retrieved_sql = result["metadatas"][0][0]["sql"]
+            print(f" Found similar query in memory (similarity: {similarity:.2f}): '{similar_question}'")
+            return retrieved_sql
+        else:
+            print(f" No similar query found in memory (highest similarity: {similarity:.2f}, threshold: {threshold})")
+    except Exception as e:
+        print(f"  Query Memory retrieval failed ({str(e)})")
     return ""
 
 def add(question: str, sql: str):
@@ -107,10 +125,20 @@ def add(question: str, sql: str):
     try:
         emb = embed(question)
         if emb is not None:
-            collection.add(
-                documents=[question],
-                embeddings=[emb],
-                metadatas=[{"sql": sql}]
-            )
+            print(" Could not generate embedding, skipping addition to Query Memory.")
+            return
+        
+        #Generate unique ID using hash of question and current timestamp
+        question_hash = hashlib.md5(question.encode()).hexdigest()[:8]
+        timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        unique_id = f"qmem_{question_hash}_{timestamp}"
+
+        collection.add(
+            ids=[unique_id],
+            documents=[question],
+            embeddings=[emb],
+            metadatas=[{"sql": sql}]
+        )
+        print(" Added new query to Query Memory (ID: {unique_id}).")
     except Exception as e:
         print(f"Warning: Could not add to Query Memory ({str(e)})")

@@ -3,12 +3,16 @@ Your task: Identify which tables, columns, and relationships from the schema are
 
 RULES:
 1. Use ONLY tables and columns from the schema
-2. List relevant tables
-3. For each table, list relevant columns
+2. List ALL relevant tables - don't skip any
+3. For each table, list ALL relevant columns
 4. Show how tables connect (foreign keys)
-5. Note anything unclear
+5. Be thorough - don't miss tables mentioned in the question
+6. Match table/column names exactly as they appear in the schema
+7. Note anything unclear
 
-OUTPUT ONLY JSON. Example:
+OUTPUT ONLY JSON. No explanations. No preamble. Just JSON.
+
+Example format:
 {
   "relevant_tables": ["Customer", "Invoice"],
   "relevant_columns": {

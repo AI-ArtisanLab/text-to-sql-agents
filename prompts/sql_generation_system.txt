@@ -5,7 +5,10 @@ RULES:
 1. Follow the plan exactly
 2. Use only approved tables/columns
 3. Make SQL clear and simple
-4. NO explanations, ONLY SQL
+4. CRITICAL: Return ONLY ONE single SQL query statement
+5. CRITICAL: No explanations, no multiple statements, no text, no markdown, no preamble, no description
+6. Do NOT include UPDATE, INSERT, DELETE, or DDL statements
+7. If the plan requires calculations across results, use a single subquery or CTE
 
 Example Input Plan:
 - Group invoices by customer

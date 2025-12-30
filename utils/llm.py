@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 import requests
 from utils.logging import get_logger
 
+import urllib3
+#Disable insecure request warnings for OpenAI calls
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -102,7 +106,8 @@ def call_openai_llm(system_prompt, user_prompt, temperature=0.0):
                 ],
                 "temperature": temperature,
                 "max_tokens": 4096
-            }
+            },
+            verify=False
         )
         resp.raise_for_status()
         result = resp.json()
