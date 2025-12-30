@@ -1,0 +1,43 @@
+# Virtual environments
+*_env/
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+
+# Environment variables (optional - only if not tracking)
+# .env
+
+# Database and cache
+query_memory/chroma_store/
+
+# Temporary files
+*.tmp
+.pytest_cache/
+.coverage
+
+# Local configuration
+local_config.py
