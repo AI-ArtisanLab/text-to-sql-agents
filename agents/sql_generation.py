@@ -110,7 +110,8 @@ Write SQLite SQL that implements this plan. Return ONLY the SQL query, nothing e
     print(f"[DEBUG] {cleaned}\n")
     
     # Check if multiple queries were detected
-    if cleaned.count('SELECT') > 1 or (';' in cleaned and cleaned.count(';') > 1):
+    semicolon_count = cleaned.count(';')
+    if semicolon_count > 1:
         raise ValueError(f"SQL generator produced multiple queries or invalid format. This agent generates ONLY single queries. If your question requires multiple queries, rephrase it as a single combined query. Raw: {cleaned}")
     
     return cleaned
