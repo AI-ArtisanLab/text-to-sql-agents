@@ -176,8 +176,13 @@ def run_text_to_sql_pipeline(question: str) -> dict:
         #Step 4: SQL Generation (Regenerated with error feedback)
         print(f"\n STEP 4: SQL Generation Agent{' -WITH ERROR FEEDBACK' if error_feedback else ''}")
         print("  Generating SQL query...")
-        sql = sql_generation_agent(schema_context, plan, retrieved_examples)
-        print(f" Generated SQL:\n{sql}")
+        try:
+            sql = sql_generation_agent(schema_context, plan, retrieved_examples, error_feedback=error_feedback)
+            print(f" Generated SQL:\n{sql}")
+        except ValueError as e:
+            print(f" ERROR: {str(e)}")
+            error_feedback = str(e)
+            continue  # Retry the entire pipeline
 
         # Step 5: Static verification and correction (up to MAX_VERIFICATION_CORRECTIONS times)
         print("\nSTEP 5: Verification Agent]")
@@ -294,7 +299,7 @@ def run_text_to_sql_pipeline(question: str) -> dict:
                     execution_feedback=execution.get('error', '')
                 )
                 
-                if correction["action"] != "correct_sql" and "corrected_sql" not in correction:
+                if correction["action"] == "correct_sql" and "corrected_sql" in correction:
                     sql = correction["corrected_sql"]
                     print("SQL Corrected for execution error.")
                     if correction.get("reasoning"):
@@ -303,6 +308,7 @@ def run_text_to_sql_pipeline(question: str) -> dict:
                 else:
                     print(f" Correction failed: {correction.get('reasoning', 'Unknown reason')}")
                     print(f"  Action: {correction.get('action', 'Unknown')}")
+                    error_feedback = f"Execution error: {execution.get('error', '')}. Previous SQL: {sql}"
                     error_feedback = f"Execution failed: {execution.get('error', 'Unknown error')}. Correction failed: {correction.get('reasoning', 'Unknown')}."
                     break  # break execution retry loop to regenerate entire pipeline
             else:

@@ -10,7 +10,10 @@ RULES:
 6. Match table/column names exactly as they appear in the schema
 7. Note anything unclear
 
-OUTPUT ONLY JSON. No explanations. No preamble. Just JSON.
+OUTPUT ONLY VALID JSON. No explanations. No preamble. No comments. Just valid JSON.
+- Do NOT use comments (//, /* */)
+- Do NOT use trailing commas
+- Each ambiguity should be a string in the "ambiguities" array, not a comment
 
 Example format:
 {
@@ -22,5 +25,5 @@ Example format:
   "relationships": [
     {"from": "Invoice.CustomerId", "to": "Customer.CustomerId"}
   ],
-  "ambiguities": []
+  "ambiguities": ["Total column appears in multiple tables"]
 }

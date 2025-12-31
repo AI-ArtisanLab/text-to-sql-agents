@@ -4,11 +4,23 @@ Your task: Break down the question into steps. Say what to compute.
 RULES:
 1. Focus on WHAT to compute, not HOW
 2. List steps in order
-3. Specify what gets aggregated (SUM, COUNT, etc.)
-4. Specify grouping
+3. Specify what gets aggregated (SUM, COUNT, AVG, etc.)
+4. Specify grouping if needed
 5. NO SQL code
+6. Output ONLY valid JSON - no explanations, no comments, no preamble
 
-OUTPUT ONLY JSON. Example:
+CRITICAL: Output ONLY JSON in this exact format with no additional text:
+
+{
+  "intent": "Brief description of what to calculate",
+  "steps": ["Step 1", "Step 2", "Step 3"],
+  "entities": ["Table1", "Table2"],
+  "aggregations": [{"field": "Table.Column", "operation": "SUM"}],
+  "grouping": ["Table.Column"],
+  "ambiguities": []
+}
+
+Example for "Find top 10 customers by spending":
 {
   "intent": "Find top 10 customers by spending",
   "steps": [
@@ -22,5 +34,22 @@ OUTPUT ONLY JSON. Example:
     {"field": "Invoice.Total", "operation": "SUM"}
   ],
   "grouping": ["Customer.CustomerId"],
+  "ambiguities": []
+}
+
+Example for "Show annual revenue and average yearly revenue":
+{
+  "intent": "Show annual revenue and average yearly revenue",
+  "steps": [
+    "Group invoices by year",
+    "Sum invoice totals per year",
+    "Calculate average of yearly totals"
+  ],
+  "entities": ["Invoice"],
+  "aggregations": [
+    {"field": "Invoice.Total", "operation": "SUM"},
+    {"field": "Invoice.Total", "operation": "AVG"}
+  ],
+  "grouping": ["YEAR(InvoiceDate)"],
   "ambiguities": []
 }
