@@ -2,6 +2,35 @@
 
 A sophisticated multi-agent system that converts natural language questions into SQL queries. Based on "Text2SQL Agents in Practice" by Mayank Goyal, this implementation uses specialized agents to decompose complex NL-to-SQL problems into manageable steps.
 
+## 📖 Welcome! 👋
+
+You have a **fully functional, multi-agent Text-to-SQL system** that converts natural language into SQL queries. This document is your complete guide to everything.
+
+## ⚡ TL;DR - Get Running in 2 Minutes
+
+```bash
+# 1. Start Ollama (skip if using OpenAI)
+ollama serve
+
+# 2. In new terminal
+cd text-to-sql-agents-main
+python -m venv test_env
+test_env\Scripts\activate
+pip install -r requirements.txt
+
+# 3. Run configuration menu
+python setup_providers.py
+# Choose: 1 (Ollama), 2 (OpenAI), 3 (Hybrid), or 4 (Hybrid)
+
+# 4. Initialize query memory
+python query_memory/build_memory.py
+
+# 5. Go!
+python main.py
+```
+
+Done! You're running a multi-agent SQL generation system.
+
 ## ✨ Features
 
 - **Multi-Agent Architecture**: 5 specialized agents handling different aspects of the conversion:
@@ -45,13 +74,19 @@ ollama pull nomic-embed-text
 cd text_to_sql_agents_FINAL_WORKING
 
 # 4. Create virtual environment and install dependencies
-python -m venv book_env
-book_env\Scripts\activate  # Windows
-# or: source book_env/bin/activate  # Linux/Mac
+python -m venv test_env
+test_env\Scripts\activate  # Windows
+# or: source test_env/bin/activate  # Linux/Mac
 
 pip install -r requirements.txt
 
-# 5. Run the system
+# 5. Configure providers
+python setup_providers.py
+
+# 6. Initialize query memory with seed questions
+python query_memory/build_memory.py
+
+# 7. Run the system
 python main.py
 ```
 
@@ -64,14 +99,18 @@ python main.py
 **Setup:**
 
 ```bash
-# Same steps as Option 1, but also update .env:
-# Edit .env and set:
-OPENAI_API_KEY=your_key_here
-# Then run configure.py to select OpenAI configuration
+# Same steps as Option 1, but also:
+# 1-4. Follow same initial steps (venv, requirements.txt, etc.)
 
-python configure.py
+# 5. Configure providers with OpenAI
+python setup_providers.py
 # Choose option 2 for "Cloud Only (OpenAI)"
+# Or edit .env and set OPENAI_API_KEY=your_key_here
 
+# 6. Initialize query memory
+python query_memory/build_memory.py
+
+# 7. Run the system
 python main.py
 ```
 
@@ -80,20 +119,36 @@ python main.py
 Mix local and cloud providers:
 
 ```bash
-# Run configuration helper
-python configure.py
+# 1-4. Follow initial setup steps (venv, requirements.txt, etc.)
+
+# 5. Run configuration helper
+python setup_providers.py
 
 # Choose option 3 or 4 for hybrid setup
-# Then run:
+
+# 6. Initialize query memory
+python query_memory/build_memory.py
+
+# 7. Run the system
 python main.py
 ```
+
+## 📋 Startup Sequence
+
+**IMPORTANT**: Follow this exact sequence to ensure proper initialization:
+
+1. **`python setup_providers.py`** - Configure your LLM and embedding providers (Ollama, OpenAI, or Hybrid)
+2. **`python query_memory/build_memory.py`** - Initialize the query memory with seed questions for semantic search
+3. **`python main.py`** - Run the main multi-agent system
+
+These steps must be done in order to ensure all components are properly initialized.
 
 ## 📋 Configuration
 
 ### Using the Configuration Helper
 
 ```bash
-python configure.py
+python setup_providers.py
 ```
 
 This interactive tool lets you choose from 4 configurations:
@@ -151,7 +206,54 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-large
 DB_PATH=data/chinook.db
 ```
 
-## 🏗️ Architecture
+## � Most Common Tasks
+
+### "I just want to run it"
+```bash
+python setup_providers.py       # Choose provider (1-4)
+python query_memory/build_memory.py  # Initialize memory
+python main.py                  # Run system
+```
+
+### "I want to use OpenAI"
+```bash
+python setup_providers.py       # Choose option 2
+# Enter your API key when prompted
+python query_memory/build_memory.py
+python main.py
+```
+
+### "I want to use only local (Ollama)"
+```bash
+# Make sure Ollama is running: ollama serve
+python setup_providers.py       # Choose option 1
+python query_memory/build_memory.py
+python main.py
+```
+
+### "I want to switch providers"
+```bash
+python setup_providers.py       # Choose different option
+python query_memory/build_memory.py  # Reinitialize
+python main.py
+```
+
+### "My setup isn't working"
+```bash
+python check_db.py              # Check database
+# Then check troubleshooting section below
+```
+
+### "I want to understand the code"
+```bash
+# Read in order:
+# 1. README.md (this file) - Architecture section
+# 2. main.py - Orchestration
+# 3. agents/*.py - Individual agents
+# 4. utils/llm.py - Provider abstraction
+```
+
+## �🏗️ Architecture
 
 ### Agent Pipeline
 
@@ -289,6 +391,15 @@ print(result)
 
 ## 🔧 Troubleshooting
 
+### Setup Sequence Reminder
+
+If you're having issues, make sure you followed the startup sequence:
+```bash
+python setup_providers.py        # Step 1: Configure providers
+python query_memory/build_memory.py  # Step 2: Initialize memory
+python main.py                   # Step 3: Run the system
+```
+
 ### "Ollama server not responding"
 
 **Solution:**
@@ -413,10 +524,31 @@ For issues:
 3. **Advanced**: Explore hybrid configurations
 4. **Expert**: Modify prompts and add custom agents
 
+## 📚 Quick Decision Matrix
+
+| What do you want? | Do this |
+|---|---|
+| **Get started now** | `python setup_providers.py` → `python query_memory/build_memory.py` → `python main.py` |
+| **Use OpenAI** | Run `python setup_providers.py` and choose option 2 |
+| **Use Ollama only** | Make sure Ollama is running, run `python setup_providers.py` and choose option 1 |
+| **Understand system** | Read Architecture section below |
+| **Fix an error** | Check Troubleshooting section and verify you followed the startup sequence |
+| **Configure provider** | Run `python setup_providers.py` or edit .env file |
+| **Customize prompts** | Edit files in `prompts/` directory |
+| **Use own database** | Replace `data/chinook.db` and update schema in prompts |
+
+## 📖 Getting Started Checklist
+
+- [ ] Read this README.md (you're here!)
+- [ ] Run `python setup_providers.py` (choose your provider)
+- [ ] Run `python query_memory/build_memory.py` (initialize memory)
+- [ ] Run `python main.py` (ready!)
+- [ ] Try a sample question
+
 ---
 
 **Status**: ✅ Production Ready
-**Last Updated**: December 2024
+**Last Updated**: January 2026
 **Python Version**: 3.11+
 **Tested Models**: Mistral 7B, GPT-4.1
 
