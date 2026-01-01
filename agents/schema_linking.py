@@ -40,7 +40,7 @@ def extract_json(text):
     return json.loads(text)
 
 def schema_linking_agent(question: str, schema: str) -> dict:
-    system_prompt = open("prompts/schema_linking_system.txt").read()
+    system_prompt = open("prompts/schema_linking.txt").read()
 
     user_prompt = f"""
 DATABASE SCHEMA

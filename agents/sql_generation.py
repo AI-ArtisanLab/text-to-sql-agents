@@ -79,7 +79,7 @@ def sql_generation_agent(
     previous_sql: str = "",
     error_feedback: str = ""
 ) -> str:
-    system_prompt = open("prompts/sql_generation_system.txt").read()
+    system_prompt = open("prompts/sql_generation.txt").read()
 
     error_context = ""
     if previous_sql and error_feedback:
