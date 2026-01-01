@@ -18,7 +18,7 @@ def extract_json(text):
     return json.loads(text)
 
 def planning_agent(question: str, schema_context: dict) -> dict:
-    system_prompt = open("prompts/planning_system.txt").read()
+    system_prompt = open("prompts/planning.txt").read()
 
     user_prompt = f"""
 SCHEMA CONTEXT (approved tables and columns):
